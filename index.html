@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>**** Control Remoto - Rotor de Antena PY2ZP ****</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 
 <style>
@@ -17,13 +18,13 @@ margin-top:20px;
 
 #conexion{
 font-size:15px;
-margin-bottom:10px;
+margin-bottom:15px;
 color:red;
 }
 
 #control{
 font-size:16px;
-margin-bottom:15px;
+margin-bottom:10px;
 }
 
 .btn{
@@ -37,14 +38,17 @@ font-weight:bold;
 color:white;
 }
 
-.btn:disabled{
-opacity:.35;
-cursor:not-allowed;
+.btn-power{
+background:#ff9800;
 }
 
-.btn-power{background:#ff9800;}
-.btn-cw{background:#2196F3;}
-.btn-ccw{background:#9c27b0;}
+.btn-cw{
+background:#2196F3;
+}
+
+.btn-ccw{
+background:#9c27b0;
+}
 
 .btn-active{
 background:#00c853!important;
@@ -71,7 +75,7 @@ margin-bottom:5px;
 
 .limite{
 font-size:14px;
-color:#cccccc;
+color:#ccc;
 margin-top:5px;
 }
 
@@ -135,29 +139,40 @@ transform:translate(-50%,-50%);
 font-size:25px;
 font-weight:bold;
 }
+
 </style>
 </head>
 
+
 <body>
 
-<h1>**** Control Remoto - Rotor de Antena PY2ZP ****</h1>
+
+<h1>
+**** Control Remoto - Rotor de Antena PY2ZP ****
+</h1>
+
 
 <div id="conexion">
 Estado: Desconectado del Broker MQTT
 </div>
 
+
 <div id="control">
-Control: Sin asignar<br>
-Conectados: 0
+Control remoto activo
 </div>
+
 
 <p>
 Posición:
 <span id="pos">0</span>°
+
 <br>
+
 Power:
 <span id="pwr">OFF</span>
+
 </p>
+
 
 
 <div class="compass">
@@ -170,85 +185,117 @@ Power:
 
 </div>
 
+
 <div id="degree">
 0°
 </div>
 
 
+
 <br>
 
 
-<button id="powerBtn"
+<button
+id="powerBtn"
 class="btn btn-power"
 onclick="enviarComando('POWER_ON')">
+
 POWER
+
 </button>
+
 
 
 <div class="giro-container">
 
 
+<!-- GIRO HORARIO IZQUIERDA -->
+
 <div class="lado">
 
 
 <div class="flecha">
+
 <svg width="40" height="40" viewBox="0 0 40 40">
+
 <path d="M10 28 A14 14 0 0 1 28 10"
 fill="none"
 stroke="white"
 stroke-width="3"
 stroke-linecap="round"/>
+
 <polygon points="26,7 33,10 27,15"
 fill="white"/>
+
 </svg>
+
 </div>
 
 
-<button id="cwBtn"
+<button
+id="cwBtn"
 class="btn btn-cw"
 onmousedown="botonCW(true)"
 onmouseup="botonCW(false)"
 ontouchstart="botonCW(true)"
 ontouchend="botonCW(false)">
+
 Giro Horario
+
 </button>
 
+
 <div class="limite">
-Máximo 190°
+Máximo 170°
 </div>
 
+
 </div>
 
 
+
+
+<!-- GIRO ANTIHORARIO DERECHA -->
 
 <div class="lado">
 
 
 <div class="flecha">
+
 <svg width="40" height="40" viewBox="0 0 40 40">
+
 <path d="M30 28 A14 14 0 0 0 12 10"
 fill="none"
 stroke="white"
 stroke-width="3"
 stroke-linecap="round"/>
+
 <polygon points="14,7 7,10 13,15"
 fill="white"/>
+
 </svg>
+
 </div>
 
 
-<button id="ccwBtn"
+
+<button
+id="ccwBtn"
 class="btn btn-ccw"
 onmousedown="botonCCW(true)"
 onmouseup="botonCCW(false)"
 ontouchstart="botonCCW(true)"
 ontouchend="botonCCW(false)">
+
 Giro Antihorario
+
 </button>
 
+
 <div class="limite">
-Máximo 170°
+Máximo 190°
 </div>
+
 
 </div>
 
@@ -265,33 +312,56 @@ let marks=document.getElementById("marks");
 for(let deg=0;deg<360;deg+=15){
 
 let item=document.createElement("div");
+
 item.className="mark";
+
 item.style.transform="rotate("+deg+"deg)";
+
 
 let text=document.createElement("span");
 
-if(deg===0)text.innerHTML="N";
-else if(deg===90)text.innerHTML="E";
-else if(deg===180)text.innerHTML="S";
-else if(deg===270)text.innerHTML="W";
-else text.innerHTML=deg+"°";
 
-if(deg%90===0)text.className="cardinal";
+if(deg===0)
+text.innerHTML="N";
+
+else if(deg===90)
+text.innerHTML="E";
+
+else if(deg===180)
+text.innerHTML="S";
+
+else if(deg===270)
+text.innerHTML="W";
+
+else
+text.innerHTML=deg+"°";
+
+
+if(deg%90===0)
+text.className="cardinal";
+
 
 item.appendChild(text);
+
 marks.appendChild(item);
 
 }
 
 
+
 //==============================
-// MQTT
+// MQTT WEB SOCKET
 //==============================
+
 
 const brokerHost="broker.hivemq.com";
+
 const brokerPort=8884;
 
-const clientId="WebClient_Rotor_"+Math.floor(Math.random()*100000);
+
+const clientId=
+"WebClient_Rotor_"+Math.floor(Math.random()*100000);
+
 
 
 let client=new Paho.MQTT.Client(
@@ -301,27 +371,11 @@ clientId
 );
 
 
-// VARIABLES CONTROL
-
-let soyMandante=false;
-let conectado=false;
-let usuarios=0;
-
-
-//==============================
-// TOPICOS CONTROL
-//==============================
-
-const TOP_ESTADO="rotor/estado";
-const TOP_CONTROL="rotor/control";
-const TOP_LOGIN="rotor/login";
-const TOP_LOGOUT="rotor/logout";
-const TOP_USUARIOS="rotor/usuarios";
-
-
 
 client.onConnectionLost=onConnectionLost;
+
 client.onMessageArrived=onMessageArrived;
+
 
 
 
@@ -330,6 +384,7 @@ client.connect({
 useSSL:true,
 
 onSuccess:onConnect,
+
 
 onFailure:function(){
 
@@ -346,53 +401,51 @@ document.getElementById("conexion").style.color="red";
 
 
 //==============================
-// CONECTADO
+// CONEXION CORRECTA
 //==============================
+
 
 function onConnect(){
 
-conectado=true;
 
 document.getElementById("conexion").innerHTML=
 "Estado: Conectado OK";
 
-document.getElementById("conexion").style.color="#00c853";
+
+document.getElementById("conexion").style.color=
+"#00c853";
 
 
-client.subscribe(TOP_ESTADO);
-client.subscribe(TOP_USUARIOS);
+client.subscribe("rotor/estado");
 
-
-// anunciar presencia
-
-let msg=new Paho.MQTT.Message(clientId);
-
-msg.destinationName=TOP_LOGIN;
-
-client.send(msg);
-
-
-actualizarControl();
 
 }
 
 
 
+
 //==============================
-// PERDIDA CONEXION
+// PERDIDA DE CONEXION
 //==============================
 
 
-function onConnectionLost(obj){
+function onConnectionLost(responseObject){
 
-if(obj.errorCode!==0){
+
+if(responseObject.errorCode!==0){
+
 
 document.getElementById("conexion").innerHTML=
 "Estado: Conexion perdida";
 
-document.getElementById("conexion").style.color="red";
+
+document.getElementById("conexion").style.color=
+"red";
+
+
 
 setTimeout(function(){
+
 
 client.connect({
 
@@ -402,16 +455,22 @@ onSuccess:onConnect
 
 });
 
+
 },5000);
 
-}
+
 
 }
+
+
+}
+
+
 
 
 
 //==============================
-// ESTADO DEL ROTOR
+// RECEPCION ESTADO ESP
 //==============================
 
 
@@ -419,20 +478,24 @@ function onMessageArrived(message){
 
 
 
-//----------------------------
-// ESTADO ROTOR
-//----------------------------
+if(message.destinationName!=="rotor/estado")
 
-if(message.destinationName===TOP_ESTADO){
+return;
+
 
 
 let data;
+
 
 try{
 
 data=JSON.parse(message.payloadString);
 
-}catch(e){
+}
+
+catch(e){
+
+console.log("JSON ERROR");
 
 return;
 
@@ -440,11 +503,18 @@ return;
 
 
 
+//==============================
+// POSICION
+//==============================
+
+
 let pos=Number(data.pos);
+
 
 
 document.getElementById("pos").innerHTML=
 pos.toFixed(0);
+
 
 
 document.getElementById("degree").innerHTML=
@@ -457,142 +527,88 @@ document.getElementById("needle").style.transform=
 
 
 
-// POWER
 
-let powerBtn=document.getElementById("powerBtn");
+//==============================
+// POWER
+//==============================
+
+
+let powerBtn=
+document.getElementById("powerBtn");
+
+
+let pwr=
+document.getElementById("pwr");
+
+
 
 if(data.power){
 
+
 powerBtn.classList.add("btn-active");
 
-document.getElementById("pwr").innerHTML="ON";
+pwr.innerHTML="ON";
 
-}else{
+
+}
+
+else{
+
 
 powerBtn.classList.remove("btn-active");
 
-document.getElementById("pwr").innerHTML="OFF";
+pwr.innerHTML="OFF";
+
 
 }
 
 
 
-// CW
 
-let cw=document.getElementById("cwBtn");
+//==============================
+// CW
+//==============================
+
+
+let cwBtn=
+document.getElementById("cwBtn");
+
+
 
 if(data.cw)
-cw.classList.add("btn-active");
+
+cwBtn.classList.add("btn-active");
+
 else
-cw.classList.remove("btn-active");
+
+cwBtn.classList.remove("btn-active");
 
 
 
+
+
+
+//==============================
 // CCW
+//==============================
 
-let ccw=document.getElementById("ccwBtn");
+
+let ccwBtn=
+document.getElementById("ccwBtn");
+
+
 
 if(data.ccw)
-ccw.classList.add("btn-active");
+
+ccwBtn.classList.add("btn-active");
+
 else
-ccw.classList.remove("btn-active");
+
+ccwBtn.classList.remove("btn-active");
+
 
 
 }
-
-
-
-//----------------------------
-// USUARIOS CONECTADOS
-//----------------------------
-
-if(message.destinationName===TOP_USUARIOS){
-
-
-let datos;
-
-try{
-
-datos=JSON.parse(message.payloadString);
-
-}catch(e){
-
-return;
-
-}
-
-
-usuarios=datos.total || 0;
-
-
-soyMandante=(datos.mandante===clientId);
-
-
-actualizarControl();
-
-
-}
-
-}
-
-
-
-//==============================
-// ACTUALIZAR INDICADOR CONTROL
-//==============================
-
-
-function actualizarControl(){
-
-
-let texto;
-
-
-if(soyMandante){
-
-texto="Control: MANDANTE";
-
-activarBotones(true);
-
-
-}else{
-
-texto="Control: OBSERVADOR";
-
-activarBotones(false);
-
-}
-
-
-document.getElementById("control").innerHTML=
-texto+
-"<br>Conectados: "+
-usuarios;
-
-
-}
-
-
-
-
-//==============================
-// HABILITAR BOTONES
-//==============================
-
-
-function activarBotones(valor){
-
-
-document.getElementById("powerBtn").disabled=!valor;
-
-document.getElementById("cwBtn").disabled=!valor;
-
-document.getElementById("ccwBtn").disabled=!valor;
-
-
-}
-
-
 //==============================
 // ENVIO MQTT
 //==============================
@@ -601,68 +617,87 @@ document.getElementById("ccwBtn").disabled=!valor;
 function enviarComando(cmd){
 
 
-if(!soyMandante){
-
-return;
-
-}
-
-
 if(!client.isConnected()){
 
+console.log("MQTT no conectado");
+
 return;
 
 }
+
 
 
 let message=new Paho.MQTT.Message(cmd);
 
-message.destinationName=TOP_CONTROL;
+
+message.destinationName=
+"rotor/control";
+
 
 client.send(message);
 
 
 }
-    //==============================
-// BOTONES MOMENTANEOS CW / CCW
+
+
+
+
+//==============================
+// BOTONES CW / CCW
 //==============================
 
+
 let cwPressed=false;
+
 let ccwPressed=false;
+
 
 
 //==============================
 // GIRO HORARIO
 //==============================
 
-function botonCW(estado){
 
-if(!soyMandante)return;
+function botonCW(estado){
 
 
 if(estado){
 
+
 if(!cwPressed){
+
 
 cwPressed=true;
 
+
 enviarComando("CW_ON");
+
 
 }
 
-}else{
+
+}
+
+else{
+
 
 if(cwPressed){
 
+
 cwPressed=false;
+
 
 enviarComando("CW_OFF");
 
-}
 
 }
 
+
 }
+
+
+}
+
 
 
 
@@ -670,105 +705,90 @@ enviarComando("CW_OFF");
 // GIRO ANTIHORARIO
 //==============================
 
-function botonCCW(estado){
 
-if(!soyMandante)return;
+function botonCCW(estado){
 
 
 if(estado){
 
+
 if(!ccwPressed){
+
 
 ccwPressed=true;
 
+
 enviarComando("CCW_ON");
+
 
 }
 
-}else{
+
+}
+
+else{
+
 
 if(ccwPressed){
 
+
 ccwPressed=false;
+
 
 enviarComando("CCW_OFF");
 
-}
 
 }
 
+
 }
+
+
+}
+
+
 
 
 
 //==============================
 // SEGURIDAD
-// AL PERDER FOCO
-// LIBERA MOVIMIENTO
+// LIBERA BOTONES AL SALIR
 //==============================
+
 
 window.addEventListener("blur",function(){
 
 
+
 if(cwPressed){
+
 
 cwPressed=false;
 
+
 enviarComando("CW_OFF");
+
 
 }
 
 
+
 if(ccwPressed){
+
 
 ccwPressed=false;
 
+
 enviarComando("CCW_OFF");
 
+
 }
+
 
 
 });
 
 
-
-
-//==============================
-// AVISO AL SALIR
-// LIBERA CONTROL
-//==============================
-
-
-window.addEventListener("beforeunload",function(){
-
-
-if(cwPressed){
-
-enviarComando("CW_OFF");
-
-}
-
-
-if(ccwPressed){
-
-enviarComando("CCW_OFF");
-
-}
-
-
-if(client.isConnected()){
-
-
-let msg=new Paho.MQTT.Message(clientId);
-
-msg.destinationName=TOP_LOGOUT;
-
-client.send(msg);
-
-
-}
-
-});
 
 
 
@@ -781,9 +801,13 @@ client.send(msg);
 document.addEventListener(
 "contextmenu",
 function(e){
+
 e.preventDefault();
+
 }
+
 );
+
 
 
 </script>
