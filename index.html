@@ -44,7 +44,6 @@ body {
 
 
 
-
 .btn {
 
     padding:12px 20px;
@@ -108,7 +107,6 @@ body {
 
 
 
-
 /* ========================= */
 /* BRUJULA */
 /* ========================= */
@@ -141,9 +139,9 @@ body {
 
     height:100%;
 
-    text-align:center;
-
     transform-origin:center;
+
+    text-align:center;
 
 }
 
@@ -172,7 +170,6 @@ body {
     font-weight:bold;
 
 }
-
 
 
 
@@ -221,6 +218,7 @@ body {
 
     transform:translate(-50%,-50%);
 
+
 }
 
 
@@ -237,11 +235,11 @@ body {
 
 
 
+
 </style>
 
 
 </head>
-
 
 
 <body>
@@ -264,12 +262,20 @@ Estado: Desconectado del Broker MQTT
 <p>
 
 Posición:
-<span id="pos">0</span>°
+
+<span id="pos">
+0
+</span>°
 
 <br>
 
+
 Power:
-<span id="pwr">OFF</span>
+
+<span id="pwr">
+OFF
+</span>
+
 
 </p>
 
@@ -311,7 +317,6 @@ Power:
 <!-- ========================= -->
 
 
-
 <button
 
 id="powerBtn"
@@ -320,13 +325,16 @@ class="btn btn-power"
 
 onclick="enviarComando('POWER_ON')">
 
+
 POWER
+
 
 </button>
 
 
 
 <br>
+
 
 
 
@@ -345,7 +353,9 @@ ontouchstart="botonCW(true)"
 ontouchend="botonCW(false)">
 
 
+
 Giro Horario
+
 
 
 </button>
@@ -369,7 +379,9 @@ ontouchstart="botonCCW(true)"
 ontouchend="botonCCW(false)">
 
 
+
 Giro Antihorario
+
 
 
 </button>
@@ -378,7 +390,6 @@ Giro Antihorario
 
 
 <br>
-
 
 
 
@@ -401,8 +412,10 @@ STOP
 <script>
 
 
+
+
 //================================================
-// CREAR ESCALA DE BRUJULA CADA 15 GRADOS
+// CREAR BRUJULA CADA 15 GRADOS
 //================================================
 
 
@@ -439,17 +452,21 @@ for(let deg=0; deg<360; deg+=15)
 
         text.innerHTML="N";
 
+
     else if(deg===90)
 
         text.innerHTML="E";
+
 
     else if(deg===180)
 
         text.innerHTML="S";
 
+
     else if(deg===270)
 
         text.innerHTML="W";
+
 
     else
 
@@ -466,21 +483,22 @@ for(let deg=0; deg<360; deg+=15)
     item.appendChild(text);
 
 
-
     marks.appendChild(item);
+
 
 
 }
 
 
+
 //================================================
-// MQTT WEB SOCKET
+// MQTT WEB SOCKET SEGURO (HTTPS GITHUB PAGES)
 //================================================
 
 
 const brokerHost = "broker.hivemq.com";
 
-const brokerPort = 8000;
+const brokerPort = 8884;
 
 
 const clientId =
@@ -490,36 +508,66 @@ const clientId =
 
 let client =
 new Paho.MQTT.Client(
+
     brokerHost,
+
     Number(brokerPort),
+
     clientId
+
 );
 
 
 
-client.onConnectionLost = onConnectionLost;
 
-client.onMessageArrived = onMessageArrived;
+client.onConnectionLost =
+onConnectionLost;
+
+
+client.onMessageArrived =
+onMessageArrived;
+
 
 
 
 client.connect({
 
-    onSuccess:onConnect
+    useSSL:true,
+
+    onSuccess:onConnect,
+
+
+    onFailure:function(error)
+
+    {
+
+        console.log("MQTT ERROR");
+
+        console.log(error);
+
+        document.getElementById("conexion").innerHTML =
+        "Error MQTT";
+
+        document.getElementById("conexion").style.color =
+        "red";
+
+    }
 
 });
 
 
 
 
+
 //================================================
-// CONECTAR MQTT
+// CONEXION CORRECTA
 //================================================
 
 
 function onConnect()
 
 {
+
 
     document.getElementById("conexion").innerHTML =
     "Estado: Conectado OK";
@@ -529,9 +577,14 @@ function onConnect()
     "#00c853";
 
 
+
     client.subscribe("rotor/estado");
 
+
+
 }
+
+
 
 
 
@@ -562,9 +615,13 @@ function onConnectionLost(responseObject)
 
         setTimeout(function(){
 
+
             client.connect({
 
+                useSSL:true,
+
                 onSuccess:onConnect
+
 
             });
 
@@ -582,8 +639,9 @@ function onConnectionLost(responseObject)
 
 
 
+
 //================================================
-// RECEPCION MQTT
+// RECEPCION ESTADO DEL ESP
 //================================================
 
 
@@ -595,6 +653,7 @@ function onMessageArrived(message)
     if(message.destinationName !== "rotor/estado")
 
         return;
+
 
 
 
@@ -615,6 +674,8 @@ function onMessageArrived(message)
 
     {
 
+        console.log("JSON ERROR");
+
         return;
 
     }
@@ -623,7 +684,11 @@ function onMessageArrived(message)
 
 
 
-    // POSICION ACTUAL
+
+
+    //=============================
+    // POSICION
+    //=============================
 
 
     let pos =
@@ -643,7 +708,7 @@ function onMessageArrived(message)
 
 
 
-    // MOVER AGUJA
+    // mover aguja
 
 
     document.getElementById("needle").style.transform =
@@ -653,12 +718,16 @@ function onMessageArrived(message)
 
 
 
-    // POWER ESTADO
+
+
+
+    //=============================
+    // POWER
+    //=============================
 
 
     let powerBtn =
     document.getElementById("powerBtn");
-
 
 
     let pwr =
@@ -673,6 +742,7 @@ function onMessageArrived(message)
         powerBtn.classList.add("btn-active");
 
         pwr.innerHTML="ON";
+
 
     }
 
@@ -691,7 +761,10 @@ function onMessageArrived(message)
 
 
 
-    // CW ESTADO
+
+    //=============================
+    // CW
+    //=============================
 
 
     let cwBtn =
@@ -705,6 +778,7 @@ function onMessageArrived(message)
 
         cwBtn.classList.add("btn-active");
 
+
     }
 
     else
@@ -713,13 +787,18 @@ function onMessageArrived(message)
 
         cwBtn.classList.remove("btn-active");
 
+
     }
 
 
 
 
 
-    // CCW ESTADO
+
+
+    //=============================
+    // CCW
+    //=============================
 
 
     let ccwBtn =
@@ -733,6 +812,7 @@ function onMessageArrived(message)
 
         ccwBtn.classList.add("btn-active");
 
+
     }
 
     else
@@ -740,6 +820,7 @@ function onMessageArrived(message)
     {
 
         ccwBtn.classList.remove("btn-active");
+
 
     }
 
@@ -751,8 +832,9 @@ function onMessageArrived(message)
 
 
 
+
 //================================================
-// ENVIO DE COMANDOS MQTT
+// ENVIO MQTT
 //================================================
 
 
@@ -763,28 +845,35 @@ function enviarComando(cmd)
 
     if(!client.isConnected())
 
+    {
+
+        console.log("MQTT no conectado");
+
         return;
 
+    }
 
 
-    let msg =
+
+    let message =
     new Paho.MQTT.Message(cmd);
 
 
 
-    msg.destinationName =
+    message.destinationName =
     "rotor/control";
 
 
 
-    client.send(msg);
+    client.send(message);
 
 
 
 }
 
+
 //================================================
-// BOTONES MOMENTANEOS
+// BOTONES MOMENTANEOS CW / CCW
 //================================================
 
 
@@ -795,8 +884,9 @@ let ccwPressed = false;
 
 
 
+
 //================================================
-// BOTON CW
+// CW
 //================================================
 
 
@@ -816,7 +906,9 @@ function botonCW(estado)
 
             cwPressed=true;
 
+
             enviarComando("CW_ON");
+
 
         }
 
@@ -828,9 +920,17 @@ function botonCW(estado)
     {
 
 
-        cwPressed=false;
+        if(cwPressed)
 
-        enviarComando("CW_OFF");
+        {
+
+            cwPressed=false;
+
+
+            enviarComando("CW_OFF");
+
+
+        }
 
 
     }
@@ -841,8 +941,10 @@ function botonCW(estado)
 
 
 
+
+
 //================================================
-// BOTON CCW
+// CCW
 //================================================
 
 
@@ -862,7 +964,9 @@ function botonCCW(estado)
 
             ccwPressed=true;
 
+
             enviarComando("CCW_ON");
+
 
         }
 
@@ -874,9 +978,17 @@ function botonCCW(estado)
     {
 
 
-        ccwPressed=false;
+        if(ccwPressed)
 
-        enviarComando("CCW_OFF");
+        {
+
+            ccwPressed=false;
+
+
+            enviarComando("CCW_OFF");
+
+
+        }
 
 
     }
@@ -888,11 +1000,14 @@ function botonCCW(estado)
 
 
 
+
+
 //================================================
-// SEGURIDAD:
-// SI SE PIERDE EL FOCO DEL NAVEGADOR
-// LIBERA LOS GIROS
+// SEGURIDAD
+// SI SE SALE DE LA PAGINA,
+// LIBERA LOS BOTONES
 //================================================
+
 
 
 window.addEventListener("blur",function(){
@@ -903,11 +1018,15 @@ window.addEventListener("blur",function(){
 
     {
 
+
         cwPressed=false;
+
 
         enviarComando("CW_OFF");
 
+
     }
+
 
 
 
@@ -915,9 +1034,12 @@ window.addEventListener("blur",function(){
 
     {
 
+
         ccwPressed=false;
 
+
         enviarComando("CCW_OFF");
+
 
     }
 
@@ -929,9 +1051,13 @@ window.addEventListener("blur",function(){
 
 
 
+
+
+
 //================================================
-// EVITAR MENU CONTEXTUAL EN CELULAR
+// EVITAR MENU CONTEXTUAL EN MOVIL
 //================================================
+
 
 
 document.addEventListener(
@@ -950,9 +1076,12 @@ function(e)
 
 
 
+
+
 </script>
 
 
 </body>
+
 
 </html>
