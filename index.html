@@ -15,73 +15,109 @@
 
 <style>
 
+
 body {
+
     font-family: Arial, sans-serif;
+
     text-align:center;
+
     background:#121212;
+
     color:white;
+
     margin-top:20px;
-}
 
-
-/* BOTONES */
-
-.btn {
-    padding:12px 20px;
-    font-size:16px;
-    margin:8px;
-    cursor:pointer;
-    border:none;
-    border-radius:5px;
-    font-weight:bold;
-    color:white;
-}
-
-
-.btn-power {
-    background:#ff9800;
-}
-
-
-.btn-cw {
-    background:#2196F3;
-}
-
-
-.btn-ccw {
-    background:#9c27b0;
-}
-
-
-.btn-stop {
-    background:#f44336;
-}
-
-
-.btn-active {
-    background:#00c853 !important;
 }
 
 
 
 #conexion {
 
-    font-size:14px;
+    font-size:15px;
+
     margin-bottom:15px;
-    color:#f44336;
+
+    color:red;
 
 }
 
 
 
-/* ============================= */
+
+.btn {
+
+    padding:12px 20px;
+
+    font-size:16px;
+
+    margin:8px;
+
+    cursor:pointer;
+
+    border:none;
+
+    border-radius:6px;
+
+    font-weight:bold;
+
+    color:white;
+
+}
+
+
+
+.btn-power {
+
+    background:#ff9800;
+
+}
+
+
+
+.btn-cw {
+
+    background:#2196F3;
+
+}
+
+
+
+.btn-ccw {
+
+    background:#9c27b0;
+
+}
+
+
+
+.btn-stop {
+
+    background:#f44336;
+
+}
+
+
+
+.btn-active {
+
+    background:#00c853 !important;
+
+}
+
+
+
+
+
+/* ========================= */
 /* BRUJULA */
-/* ============================= */
+/* ========================= */
 
 
 .compass {
 
     width:260px;
+
     height:260px;
 
     border:5px solid white;
@@ -93,6 +129,7 @@ body {
     position:relative;
 
 }
+
 
 
 
@@ -108,10 +145,6 @@ body {
 
     transform-origin:center;
 
-    font-size:13px;
-
-    color:#ddd;
-
 }
 
 
@@ -120,11 +153,13 @@ body {
 
     position:absolute;
 
-    top:5px;
+    top:3px;
 
     left:50%;
 
     transform:translateX(-50%);
+
+    font-size:12px;
 
 }
 
@@ -132,21 +167,19 @@ body {
 
 .cardinal {
 
-    font-size:20px;
+    font-size:22px !important;
 
     font-weight:bold;
-
-    color:white;
 
 }
 
 
 
-/* aguja */
 
 .needle {
 
-    width:4px;
+
+    width:5px;
 
     height:115px;
 
@@ -160,23 +193,27 @@ body {
 
     transform-origin:bottom center;
 
+    transform:rotate(0deg);
+
     transition:transform 0.4s;
 
 }
 
 
 
+
 .center {
 
-    position:absolute;
 
-    width:12px;
+    width:14px;
 
-    height:12px;
+    height:14px;
 
     background:white;
 
     border-radius:50%;
+
+    position:absolute;
 
     left:50%;
 
@@ -190,9 +227,11 @@ body {
 
 #degree {
 
-    font-size:22px;
+
+    font-size:25px;
 
     font-weight:bold;
+
 
 }
 
@@ -200,10 +239,13 @@ body {
 
 </style>
 
+
 </head>
 
 
+
 <body>
+
 
 
 <h1>
@@ -211,20 +253,27 @@ Control Remoto - Rotor de Antena
 </h1>
 
 
+
 <div id="conexion">
 Estado: Desconectado del Broker MQTT
 </div>
 
 
+
+
 <p>
-Posición Actual:
+
+Posición:
 <span id="pos">0</span>°
+
 <br>
 
 Power:
 <span id="pwr">OFF</span>
 
 </p>
+
+
 
 
 
@@ -248,13 +297,12 @@ Power:
 </div>
 
 
+
 <div id="degree">
 0°
 </div>
 
 
-
-<br>
 
 
 
@@ -263,9 +311,13 @@ Power:
 <!-- ========================= -->
 
 
-<button 
+
+<button
+
 id="powerBtn"
+
 class="btn btn-power"
+
 onclick="enviarComando('POWER_ON')">
 
 POWER
@@ -273,116 +325,157 @@ POWER
 </button>
 
 
+
 <br>
 
 
 
 <button
+
 id="cwBtn"
+
 class="btn btn-cw"
 
 onmousedown="botonCW(true)"
+
 onmouseup="botonCW(false)"
 
 ontouchstart="botonCW(true)"
+
 ontouchend="botonCW(false)">
+
 
 Giro Horario
 
+
 </button>
+
+
 
 
 
 <button
+
 id="ccwBtn"
+
 class="btn btn-ccw"
 
 onmousedown="botonCCW(true)"
+
 onmouseup="botonCCW(false)"
 
 ontouchstart="botonCCW(true)"
+
 ontouchend="botonCCW(false)">
+
 
 Giro Antihorario
 
+
 </button>
+
 
 
 
 <br>
 
 
+
+
 <button
+
 class="btn btn-stop"
+
 onclick="enviarComando('STOP')">
+
 
 STOP
 
+
 </button>
+
+
 
 
 
 <script>
 
 
-// CREAR ESCALA 15 GRADOS
+//================================================
+// CREAR ESCALA DE BRUJULA CADA 15 GRADOS
+//================================================
 
-let compass = document.querySelector(".compass");
 
-let marks = document.getElementById("marks");
+let marks =
+document.getElementById("marks");
+
 
 
 for(let deg=0; deg<360; deg+=15)
+
 {
 
-    let div=document.createElement("div");
 
-    div.className="mark";
+    let item =
+    document.createElement("div");
 
 
-    div.style.transform=
+
+    item.className="mark";
+
+
+
+    item.style.transform =
     "rotate("+deg+"deg)";
 
 
-    let txt=document.createElement("span");
 
-    txt.innerHTML=deg+"°";
-
-
-    if(deg==0)
-        txt.innerHTML="N";
-
-    if(deg==90)
-        txt.innerHTML="E";
-
-    if(deg==180)
-        txt.innerHTML="S";
-
-    if(deg==270)
-        txt.innerHTML="W";
+    let text =
+    document.createElement("span");
 
 
-    if(deg%90==0)
-        txt.className="cardinal";
+
+    if(deg===0)
+
+        text.innerHTML="N";
+
+    else if(deg===90)
+
+        text.innerHTML="E";
+
+    else if(deg===180)
+
+        text.innerHTML="S";
+
+    else if(deg===270)
+
+        text.innerHTML="W";
+
+    else
+
+        text.innerHTML=deg+"°";
 
 
-    div.appendChild(txt);
+
+    if(deg%90===0)
+
+        text.className="cardinal";
 
 
-    marks.appendChild(div);
+
+    item.appendChild(text);
+
+
+
+    marks.appendChild(item);
+
 
 }
 
 
-
-</script>
-
-<script>
-
-
-//======================================================
+//================================================
 // MQTT WEB SOCKET
-//======================================================
+//================================================
 
 
 const brokerHost = "broker.hivemq.com";
@@ -419,9 +512,9 @@ client.connect({
 
 
 
-//======================================================
-// CONEXION MQTT
-//======================================================
+//================================================
+// CONECTAR MQTT
+//================================================
 
 
 function onConnect()
@@ -433,7 +526,7 @@ function onConnect()
 
 
     document.getElementById("conexion").style.color =
-    "#4CAF50";
+    "#00c853";
 
 
     client.subscribe("rotor/estado");
@@ -442,45 +535,56 @@ function onConnect()
 
 
 
-//======================================================
-// PERDIDA CONEXION
-//======================================================
+
+//================================================
+// PERDIDA DE CONEXION
+//================================================
 
 
 function onConnectionLost(responseObject)
 
 {
 
+
     if(responseObject.errorCode !== 0)
 
     {
 
+
         document.getElementById("conexion").innerHTML =
-        "Estado: Desconectado";
+        "Estado: Conexion perdida";
 
 
         document.getElementById("conexion").style.color =
-        "#f44336";
+        "red";
 
 
-        setTimeout(()=>{
+
+        setTimeout(function(){
 
             client.connect({
+
                 onSuccess:onConnect
+
             });
 
 
         },5000);
 
+
+
     }
+
 
 }
 
 
 
-//======================================================
-// RECEPCION ESTADO DEL ESP
-//======================================================
+
+
+//================================================
+// RECEPCION MQTT
+//================================================
 
 
 function onMessageArrived(message)
@@ -494,16 +598,33 @@ function onMessageArrived(message)
 
 
 
-    let data =
-    JSON.parse(message.payloadString);
+    let data;
 
 
 
-    console.log(data);
+    try
+
+    {
+
+        data =
+        JSON.parse(message.payloadString);
+
+    }
+
+    catch(e)
+
+    {
+
+        return;
+
+    }
 
 
 
-    // POSICION
+
+
+    // POSICION ACTUAL
+
 
     let pos =
     Number(data.pos);
@@ -520,7 +641,10 @@ function onMessageArrived(message)
 
 
 
-    // MOVIMIENTO AGUJA
+
+
+    // MOVER AGUJA
+
 
     document.getElementById("needle").style.transform =
     "rotate("+pos+"deg)";
@@ -528,10 +652,13 @@ function onMessageArrived(message)
 
 
 
-    // POWER
+
+    // POWER ESTADO
+
 
     let powerBtn =
     document.getElementById("powerBtn");
+
 
 
     let pwr =
@@ -561,7 +688,11 @@ function onMessageArrived(message)
 
 
 
-    // CW
+
+
+
+    // CW ESTADO
+
 
     let cwBtn =
     document.getElementById("cwBtn");
@@ -570,16 +701,26 @@ function onMessageArrived(message)
 
     if(data.cw)
 
+    {
+
         cwBtn.classList.add("btn-active");
+
+    }
 
     else
 
+    {
+
         cwBtn.classList.remove("btn-active");
 
+    }
 
 
 
-    // CCW
+
+
+    // CCW ESTADO
+
 
     let ccwBtn =
     document.getElementById("ccwBtn");
@@ -588,11 +729,19 @@ function onMessageArrived(message)
 
     if(data.ccw)
 
+    {
+
         ccwBtn.classList.add("btn-active");
+
+    }
 
     else
 
+    {
+
         ccwBtn.classList.remove("btn-active");
+
+    }
 
 
 
@@ -601,9 +750,10 @@ function onMessageArrived(message)
 
 
 
-//======================================================
-// ENVIO MQTT
-//======================================================
+
+//================================================
+// ENVIO DE COMANDOS MQTT
+//================================================
 
 
 function enviarComando(cmd)
@@ -617,95 +767,25 @@ function enviarComando(cmd)
 
 
 
-    let message =
+    let msg =
     new Paho.MQTT.Message(cmd);
 
 
 
-    message.destinationName =
+    msg.destinationName =
     "rotor/control";
 
 
 
-    client.send(message);
+    client.send(msg);
+
 
 
 }
 
-
-
-//======================================================
-// BOTON CW MOMENTANEO
-//======================================================
-
-
-function botonCW(estado)
-
-{
-
-
-    if(estado)
-
-    {
-
-        enviarComando("CW_ON");
-
-    }
-
-    else
-
-    {
-
-        enviarComando("CW_OFF");
-
-    }
-
-
-}
-
-
-
-
-//======================================================
-// BOTON CCW MOMENTANEO
-//======================================================
-
-
-function botonCCW(estado)
-
-{
-
-
-    if(estado)
-
-    {
-
-        enviarComando("CCW_ON");
-
-    }
-
-    else
-
-    {
-
-        enviarComando("CCW_OFF");
-
-    }
-
-
-}
-
-
-
-</script>
-
-
-</body>
-
-</html>
-//======================================================
-// SEGURIDAD BOTONES MOMENTANEOS
-//======================================================
+//================================================
+// BOTONES MOMENTANEOS
+//================================================
 
 
 let cwPressed = false;
@@ -714,18 +794,21 @@ let ccwPressed = false;
 
 
 
-//------------------------------------------------------
-// CW
-//------------------------------------------------------
+
+//================================================
+// BOTON CW
+//================================================
 
 
 function botonCW(estado)
 
 {
 
+
     if(estado)
 
     {
+
 
         if(!cwPressed)
 
@@ -744,28 +827,34 @@ function botonCW(estado)
 
     {
 
+
         cwPressed=false;
 
         enviarComando("CW_OFF");
 
+
     }
+
 
 }
 
 
 
-//------------------------------------------------------
-// CCW
-//------------------------------------------------------
+
+//================================================
+// BOTON CCW
+//================================================
 
 
 function botonCCW(estado)
 
 {
 
+
     if(estado)
 
     {
+
 
         if(!ccwPressed)
 
@@ -784,22 +873,31 @@ function botonCCW(estado)
 
     {
 
+
         ccwPressed=false;
 
         enviarComando("CCW_OFF");
 
+
     }
+
 
 }
 
 
 
-//------------------------------------------------------
-// LIBERAR SI EL NAVEGADOR PIERDE EL FOCO
-//------------------------------------------------------
+
+
+//================================================
+// SEGURIDAD:
+// SI SE PIERDE EL FOCO DEL NAVEGADOR
+// LIBERA LOS GIROS
+//================================================
 
 
 window.addEventListener("blur",function(){
+
+
 
     if(cwPressed)
 
@@ -810,6 +908,7 @@ window.addEventListener("blur",function(){
         enviarComando("CW_OFF");
 
     }
+
 
 
     if(ccwPressed)
@@ -823,18 +922,37 @@ window.addEventListener("blur",function(){
     }
 
 
+
 });
 
 
 
-//------------------------------------------------------
-// EVITAR MENU CONTEXTUAL EN MOVIL
-//------------------------------------------------------
+
+
+//================================================
+// EVITAR MENU CONTEXTUAL EN CELULAR
+//================================================
+
 
 document.addEventListener(
+
 "contextmenu",
-function(e){
+
+function(e)
+
+{
 
     e.preventDefault();
 
-});
+}
+
+);
+
+
+
+</script>
+
+
+</body>
+
+</html>
