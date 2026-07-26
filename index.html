@@ -209,53 +209,7 @@ POWER
 <div class="giro-container">
 
 
-<!-- GIRO HORARIO IZQUIERDA -->
-
-<div class="lado">
-
-
-<div class="flecha">
-
-<svg width="40" height="40" viewBox="0 0 40 40">
-
-<path d="M10 28 A14 14 0 0 1 28 10"
-fill="none"
-stroke="white"
-stroke-width="3"
-stroke-linecap="round"/>
-
-<polygon points="26,7 33,10 27,15"
-fill="white"/>
-
-</svg>
-
-</div>
-
-
-<button
-id="cwBtn"
-class="btn btn-cw"
-onmousedown="botonCW(true)"
-onmouseup="botonCW(false)"
-ontouchstart="botonCW(true)"
-ontouchend="botonCW(false)">
-
-Giro Horario
-
-</button>
-
-
-<div class="limite">
-Máximo 170°
-</div>
-
-
-</div>
-
-
-
-
-<!-- GIRO ANTIHORARIO DERECHA -->
+<!-- GIRO ANTIHORARIO DERECHA (AHORA A LA IZQUIERDA) -->
 
 <div class="lado">
 
@@ -294,6 +248,52 @@ Giro Antihorario
 
 <div class="limite">
 Máximo 190°
+</div>
+
+
+</div>
+
+
+
+
+<!-- GIRO HORARIO IZQUIERDA (AHORA A LA DERECHA) -->
+
+<div class="lado">
+
+
+<div class="flecha">
+
+<svg width="40" height="40" viewBox="0 0 40 40">
+
+<path d="M10 28 A14 14 0 0 1 28 10"
+fill="none"
+stroke="white"
+stroke-width="3"
+stroke-linecap="round"/>
+
+<polygon points="26,7 33,10 27,15"
+fill="white"/>
+
+</svg>
+
+</div>
+
+
+<button
+id="cwBtn"
+class="btn btn-cw"
+onmousedown="botonCW(true)"
+onmouseup="botonCW(false)"
+ontouchstart="botonCW(true)"
+ontouchend="botonCW(false)">
+
+Giro Horario
+
+</button>
+
+
+<div class="limite">
+Máximo 170°
 </div>
 
 
