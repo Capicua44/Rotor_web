@@ -30,7 +30,7 @@ margin-bottom:10px;
 .btn{
 padding:12px 20px;
 font-size:16px;
-margin:8px;
+margin:0;
 cursor:pointer;
 border:none;
 border-radius:6px;
@@ -67,10 +67,25 @@ flex-direction:column;
 align-items:center;
 }
 
+.control-fila{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:5px;
+}
+
+.etiqueta-btn{
+font-size:15px;
+font-weight:bold;
+margin-bottom:5px;
+}
+
 .flecha{
 width:40px;
 height:40px;
-margin-bottom:5px;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
 .limite{
@@ -209,29 +224,25 @@ POWER
 <div class="giro-container">
 
 
-<!-- GIRO ANTIHORARIO DERECHA (AHORA A LA IZQUIERDA) -->
+<!-- GIRO ANTIHORARIO (IZQUIERDA) -->
 
 <div class="lado">
 
+<div class="etiqueta-btn">Giro Antihorario</div>
+
+<div class="control-fila">
 
 <div class="flecha">
-
 <svg width="40" height="40" viewBox="0 0 40 40">
-
 <path d="M30 28 A14 14 0 0 0 12 10"
 fill="none"
 stroke="white"
 stroke-width="3"
 stroke-linecap="round"/>
-
 <polygon points="14,7 7,10 13,15"
 fill="white"/>
-
 </svg>
-
 </div>
-
-
 
 <button
 id="ccwBtn"
@@ -240,44 +251,27 @@ onmousedown="botonCCW(true)"
 onmouseup="botonCCW(false)"
 ontouchstart="botonCCW(true)"
 ontouchend="botonCCW(false)">
-
-Giro Antihorario
-
+CCW
 </button>
 
+</div>
 
 <div class="limite">
 Máximo 190°
 </div>
 
-
 </div>
 
 
 
 
-<!-- GIRO HORARIO IZQUIERDA (AHORA A LA DERECHA) -->
+<!-- GIRO HORARIO (DERECHA) -->
 
 <div class="lado">
 
+<div class="etiqueta-btn">Giro Horario</div>
 
-<div class="flecha">
-
-<svg width="40" height="40" viewBox="0 0 40 40">
-
-<path d="M10 28 A14 14 0 0 1 28 10"
-fill="none"
-stroke="white"
-stroke-width="3"
-stroke-linecap="round"/>
-
-<polygon points="26,7 33,10 27,15"
-fill="white"/>
-
-</svg>
-
-</div>
-
+<div class="control-fila">
 
 <button
 id="cwBtn"
@@ -286,16 +280,26 @@ onmousedown="botonCW(true)"
 onmouseup="botonCW(false)"
 ontouchstart="botonCW(true)"
 ontouchend="botonCW(false)">
-
-Giro Horario
-
+CW
 </button>
 
+<div class="flecha">
+<svg width="40" height="40" viewBox="0 0 40 40">
+<path d="M10 28 A14 14 0 0 1 28 10"
+fill="none"
+stroke="white"
+stroke-width="3"
+stroke-linecap="round"/>
+<polygon points="26,7 33,10 27,15"
+fill="white"/>
+</svg>
+</div>
+
+</div>
 
 <div class="limite">
 Máximo 170°
 </div>
-
 
 </div>
 
